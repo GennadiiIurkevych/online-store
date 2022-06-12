@@ -1,52 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Card component</title>
-  <link rel="stylesheet" href="../../../styles/style.min.css">
+  <head>
+    <meta charset="utf-8" />
+    <title>Card component</title>
+    <link rel="stylesheet" href="./style.css" />
 
-  <style>
-    .wrapper {
-      width: 600px;
-      margin: 100px auto;
-    }
+    <style>
+      .wrapper {
+        width: 800px;
+        margin: 100px auto;
+      }
+      .os-product-card {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
 
-    .os-product-card {
-      margin-bottom: 20px;
-    }
-  </style>
-</head>
+  <body>
+    <div id="root" class="wrapper"></div>
 
-<body>
+    <script type="module">
+      import OnlineStorePage from './index.js';
+      import CardsList from './cards-list.js';
+      //import { products } from './products.js';
 
-  <div id="root" class="wrapper"></div>
+      const products = [{
+        id: "76w0hz7015kkr9kjkav",
+        images: [
+          "https://content2.rozetka.com.ua/goods/images/big_tile/163399632.jpg",
+          "https://content.rozetka.com.ua/goods/images/big_tile/163399633.jpg",
+        ],
+        title:
+          "Ноутбук Acer Aspire 3 A315-57G-336G (NX.HZREU.01S) Charcoal Black",
+        rating: 2.89,
+        price: 15999,
+        category: "laptops",
+        brand: "acer",
+      }];
 
-  <script type="module">
-    import Card from './index.js';
-    import Pagination from './pagination.js';
+      const page = new OnlineStorePage(products);
+      const root = document.querySelector('#root');
+      const list = new CardsList(products);
 
-    const product = {
-      "id": "76w0hz7015kkr9kjkav",
-      "images": [
-        "https://content2.rozetka.com.ua/goods/images/big_tile/163399632.jpg",
-        "https://content.rozetka.com.ua/goods/images/big_tile/163399633.jpg"
-      ],
-      "title": "Ноутбук Acer Aspire 3 A315-57G-336G (NX.HZREU.01S) Charcoal Black",
-      "rating": 2.89,
-      "price": 15999,
-      "category": "laptops",
-      "brand": "acer"
-    };
-
-    const card = new Card(product);
-    const pagination = new Pagination({
-      activePageIndex: 3
-    });
-
-    const someElement = document.querySelector('#root');
-
-    someElement.append(card.componentElement);
-    someElement.append(pagination.element);
-  </script>
-</body>
+      list.renderCards();
+      root.append(page.element);
+    </script>
+  </body>
 </html>

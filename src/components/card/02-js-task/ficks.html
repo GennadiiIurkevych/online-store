@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Card component</title>
+    <link rel="stylesheet" href="./style.css" />
+
+    <style>
+      .wrapper {
+        width: 800px;
+        margin: 100px auto;
+      }
+
+      .os-product-card {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root" class="wrapper"></div>
+
+    <script type="module">
+      //import OnlineStorePage from './index.js';
+      //import CardsList from './cards-list.js';
+      //import { products } from './products.js';
+
+      const products = [{
+        id: "76w0hz7015kkr9kjkav",
+        images: [
+          "https://content2.rozetka.com.ua/goods/images/big_tile/163399632.jpg",
+          "https://content.rozetka.com.ua/goods/images/big_tile/163399633.jpg",
+        ],
+        title:
+          "Ноутбук Acer Aspire 3 A315-57G-336G (NX.HZREU.01S) Charcoal Black",
+        rating: 2.89,
+        price: 15999,
+        category: "laptops",
+        brand: "acer",
+      }];
+
+//export default
+class OnlineStorePage {
+  constructor () {
+    this.components = {};
+
+    this.initComponents();
+    this.render();
+    this.renderComponents();
+  }
+
+  getTemplate () {
+    return `
+      <div>
+        <div data-element="card">
+          <!-- Card component -->
+        </div>
+        <div data-element="pagination">
+          <!-- Pagination component -->
+        </div>
+      </div>
+    `;
+  }
+
+  initComponents () {
+    const card = new Card(products);
+    const pagination = new Pagination({
+      activePageIndex: 2
+    });
+
+    this.components.card = card;
+    this.components.pagination = pagination;
+  }
+
+  renderComponents () {
+    const cardContainer = this.element.querySelector('[data-element="card"]');
+    const paginationContainer = this.element.querySelector('[data-element="pagination"]');
+
+    cardContainer.append(this.components.card.element);
+    paginationContainer.append(this.components.pagination.element);
+  }
+
+  render () {
+    const wrapper = document.createElement('div');
+
+    wrapper.innerHTML = this.getTemplate();
+
+    this.element = wrapper.firstElementChild;
+  }
+}
+
+class Card {
+  constructor (someProduct = {}) {
+    this.state = someProduct;
+    this.myRender();
+  }
+
+  getTemplate () {
+    const result =  `
+      <div class="block" data-element="body">
+        <div>
+          <img class="image" src="${this.state.images[0]}" alt="Note">
+          </div>
+        <div class="price">
+          <p class="raiting">
+            ${this.state.rating} <img class="star" src="Star.png">
+          </p>
+          <p class="cost">
+            ${this.state.price}
+          </p>
+        </div>
+          <p class="text">
+            ${this.state.title}
+          </p>
+          <p> ${this.state.category}</p>
+        <div>
+          <button class="buttons">
+            <a href="#">ADD TO CART</a>
+          </button>
+        </div>
+      </div>
+    `;
+
+    return result
+  }
+
+  update(data = {}) {
+    this.state = data;
+    this.componentElement.innerHTML = this.getTemplate();
+  }
+
+  myRender () {
+    const wrapper = document.createElement('div');
+
+    wrapper.innerHTML = this.getTemplate();
+
+    this.element = wrapper.firstElementChild;
+  }
+}
+
+class Pagination {
+  defaultPagesSize = 12;
+
+  constructor ({
+    activePageIndex = 0
+  } = {}) {
+    this.activePageIndex = activePageIndex;
+
+    this.render();
+    this.addEventListeners();
+  }
+
+  getTemplate () {
+    return `
+      <div class="wrapper2">
+        <nav class="btn-prev" data-element="nav-prev">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+          </svg>
+          <a href="#"><i class="bi bi-chevron-left"></i></a>
+        </nav>
+        ${this.getPages()}
+        <nav class="btn-next" data-element="nav-next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+          </svg>
+          <a href="#"><i class="bi bi-chevron-right"></i></a>
+        </nav>
+      </div>
+    `;
+  }
+
+  getPages () {
+    return `
+      <div class="wrapper2" data-element="pagination">
+        ${new Array(this.defaultPagesSize).fill(1).map((item, index) => {
+          return this.getPageTemplate(index);
+        }).join(' ')}
+      </div>
+    `;
+  }
+
+  getPageTemplate (pageIndex = 0) {
+    const isActive = pageIndex === this.activePageIndex ? 'active' : '';
+
+    return `<li>
+      <a href="#"
+        data-element="page-link"
+        class="page-link ${isActive}"
+        data-page-index="${pageIndex}">
+        ${pageIndex + 1}
+      </a>
+    </li>`;
+  }
+
+  setPage (pageIndex = 0) {
+    if (pageIndex === this.activePageIndex) return;
+    if (pageIndex > this.defaultPagesSize - 1 || pageIndex < 0) return;
+
+    const activePage = this.element.querySelector('.page-link.active');
+
+    if (activePage) {
+      activePage.classList.remove('active');
+    }
+
+    const nextActivePage = this.element.querySelector(`[data-page-index="${pageIndex}"]`);
+
+    if (nextActivePage) {
+      nextActivePage.classList.add('active');
+    }
+
+    this.activePageIndex = pageIndex;
+  }
+
+  nextPage () {
+    const nextPageIndex = this.activePageIndex + 1;
+
+    this.setPage(nextPageIndex);
+  }
+
+  prevPage () {
+    const prevPageIndex = this.activePageIndex - 1;
+
+    this.setPage(prevPageIndex);
+  }
+
+  render () {
+    const wrapper = document.createElement('div');
+
+    wrapper.innerHTML = this.getTemplate();
+
+    this.element = wrapper.firstElementChild;
+  }
+
+  addEventListeners () {
+    const prevPageBtn = this.element.querySelector('[data-element="nav-prev"]');
+    const nextPageBtn = this.element.querySelector('[data-element="nav-next"]');
+    const pagesList = this.element.querySelector('[data-element="pagination"]');
+
+    prevPageBtn.addEventListener('click', () => {
+      this.prevPage();
+    });
+
+    nextPageBtn.addEventListener('click', () => {
+      this.nextPage();
+    });
+
+    pagesList.addEventListener('click', event => {
+      const pageItem = event.target.closest('.page-link');
+
+      if (!pageItem) return;
+
+      const { pageIndex } = pageItem.dataset;
+
+      this.setPage(parseInt(pageIndex, 10));
+    });
+  }
+}
+
+class CardsList {
+  constructor (data = []) {
+    this.data = data;
+    this.render();
+  }
+
+  getTemplate () {
+    return `
+      <div>
+        <div class="block" data-element="body">
+
+        </div>
+      </div>
+
+    `;
+
+  }
+
+  render () {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = this.getTemplate();
+    this.element = wrapper.firstElementChild;
+
+  }
+
+  renderCards () {
+    const cards = this.data.map(item => {
+      const card = new Card(item);
+      return card.element;
+    });
+    console.log('cards: ', cards);
+  }
+}
+
+
+
+      const page = new OnlineStorePage(products);
+      const root = document.querySelector('#root');
+
+      const list = new CardsList(products);
+
+      list.renderCards();
+
+      root.append(page.element);
+    </script>
+  </body>
+</html>
